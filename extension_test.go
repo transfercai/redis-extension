@@ -3,6 +3,7 @@ package redis_extension
 import (
 	"context"
 	"github.com/go-redis/redis"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -74,4 +75,15 @@ func TestExtensionMSetAndExpire(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestExtensionGetAndExpire(t *testing.T) {
+	c := DoInjectRedis(getRedisClient())
+	key := "3333"
+	_ = c.Set(key, "1", time.Second*10)
+	v, err := c.GetAndExpire(context.TODO(), key, 1002)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, "1", v)
 }

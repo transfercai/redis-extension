@@ -25,9 +25,9 @@ func DoInjectRedis(rc *redis.Client) *Client {
 func (c *Client) GetAndDel(ctx context.Context, key string, value interface{}) (interface{}, error) {
 	luaScript :=
 		`if redis.call("get",KEYS[1]) == ARGV[1] then
-    	return redis.call("del",KEYS[1])
+    		return redis.call("del",KEYS[1])
 		else
-    	return 0
+    		return 0
 		end`
 	keys := []string{key}
 	values := []interface{}{value}
@@ -56,9 +56,9 @@ func (c *Client) HSetAndExpire(ctx context.Context, key string, childKey string,
 	luaScript :=
 		`local ret = redis.call("hset", KEYS[1], KEYS[2], ARGV[1])
 		if ret > 0 then
-		return redis.call("expire", KEYS[1], ARGV[2])
+			return redis.call("expire", KEYS[1], ARGV[2])
 		else 
-		return -1
+			return -1
 		end`
 	keys := []string{key, childKey}
 	return c.Eval(luaScript, keys, value, timeSec).Result()
@@ -68,18 +68,18 @@ func (c *Client) SetNxAndExpire(ctx context.Context, key string, value interface
 	luaScript :=
 		`local ret = redis.call("setnx", KEYS[1], ARGV[1])
 		if ret > 0 then
-		return redis.call("expire", KEYS[1], ARGV[2])
+			return redis.call("expire", KEYS[1], ARGV[2])
 		else 
-		return -1
+			return -1
 		end`
 	keys := []string{key}
 	return c.Eval(luaScript, keys, value, timeSec).Result()
 }
 
 func (c *Client) MSetAndExpire(ctx context.Context, keys []string, values []interface{}, timeSec int64) (interface{}, error) {
-	lua := fmt.Sprintf(
+	luaScript := fmt.Sprintf(
 		`local vals = ARGV local ex = %d `, timeSec)
-	lua +=
+	luaScript +=
 		`for i,v in ipairs(KEYS) do
 			redis.call("set",v,vals[i])
 			local ret=redis.call("expire",v,ex)
@@ -89,5 +89,14 @@ func (c *Client) MSetAndExpire(ctx context.Context, keys []string, values []inte
 		end
 		return 1
 		`
-	return c.Eval(lua, keys, values...).Result()
+	return c.Eval(luaScript, keys, values...).Result()
+}
+
+func (c *Client) GetAndExpire(ctx context.Context, key string, timeSec int64) (interface{}, error) {
+	luaScript :=
+		`redis.call("expire", KEYS[1], ARGV[1])
+		return redis.call("get",KEYS[1])
+		`
+	keys := []string{key}
+	return c.Eval(luaScript, keys, timeSec).Result()
 }
