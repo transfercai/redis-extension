@@ -30,8 +30,7 @@ func (c *Client) GetAndDel(ctx context.Context, key string, value interface{}) (
     		return 0
 		end`
 	keys := []string{key}
-	values := []interface{}{value}
-	return c.Eval(luaScript, keys, values...).Result()
+	return c.Eval(luaScript, keys, value).Result()
 }
 
 func (c *Client) IncrAndExpire(ctx context.Context, key string, timeSec int64) (interface{}, error) {
