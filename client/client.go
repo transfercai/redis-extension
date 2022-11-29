@@ -1,10 +1,11 @@
-package redis_extension
+package client
 
 import (
 	"context"
 	"fmt"
-	"github.com/go-redis/redis"
 	"sync"
+
+	"github.com/go-redis/redis"
 )
 
 var (
