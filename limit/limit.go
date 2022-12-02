@@ -22,7 +22,7 @@ type Limiter interface {
 	Add(value string, timeStamp int64) (int64, error)
 	IsLimit(start, end int64) (bool, error)
 	Del(start int64) (int64, error)
-	CalcStart(current int64) int64 //nano
+	CalcStart(current int64) int64
 }
 
 type RedisLimit struct {

@@ -27,4 +27,5 @@ func TestDoLimit(t *testing.T) {
 		}
 		time.Sleep(time.Millisecond * 2)
 	}
+
 }
