@@ -4,11 +4,6 @@ import (
 	"strings"
 )
 
-var nodeTree = &Tree{
-	isRoot: true,
-	route:  NewSafeMap(),
-}
-
 type Tree struct {
 	father    *Tree
 	route     *SafeMap
