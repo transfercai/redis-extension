@@ -12,6 +12,10 @@ func BenchmarkNewTree(b *testing.B) {
 	tree.AddNode("/test/a/b/c", "1")
 	tree.AddNode("/a/b/c/d", "2")
 	tree.AddNode("/a/b/.+", "3")
+	tree.AddNode("/c/.+", "4")
+	tree.AddNode("/3/.+", "5")
+	tree.AddNode("/2/.+", "6")
+	tree.AddNode("/1/.+", "7")
 	for i := 0; i < b.N; i++ {
 		tree.IsMatch("/test/a/b/c")
 	}

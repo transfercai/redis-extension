@@ -18,6 +18,7 @@ func NewRootTree() *Tree {
 		father:    nil,
 		route:     NewSafeMap(),
 		isRoot:    true,
+		value:     "/",
 		serviceID: "",
 	}
 	t.root = t
@@ -36,6 +37,10 @@ func (t *Tree) newChild(node string) *Tree {
 
 func (t *Tree) getRoot() *Tree {
 	return t.root
+}
+
+func (t *Tree) GetServiceID() string {
+	return t.serviceID
 }
 
 func (t *Tree) AddNode(path, serviceID string) {
