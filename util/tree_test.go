@@ -1,13 +1,14 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func BenchmarkNewTree(b *testing.B) {
-	tree := NewTree()
+	tree := NewRootTree()
 	tree.AddNode("/test/a/b/c", "1")
 	tree.AddNode("/a/b/c/d", "2")
 	tree.AddNode("/a/b/.+", "3")
@@ -17,7 +18,7 @@ func BenchmarkNewTree(b *testing.B) {
 }
 
 func TestTreeAdd(t *testing.T) {
-	tree := NewTree()
+	tree := NewRootTree()
 	tree.AddNode("/test/a/b/c", "1")
 	tree.AddNode("/a/b/c/d", "2")
 	tree.AddNode("/a/b/.+", "3")
@@ -32,5 +33,18 @@ func TestTreeAdd(t *testing.T) {
 	assert.Equal(t, "2", serviceId.serviceID)
 	tree.DelNode("/a/b/c/d")
 	v, serviceId = tree.IsMatch("/a/b/c/d")
-	assert.Equal(t, false, v)
+	assert.Equal(t, true, v)
+	assert.Equal(t, "3", serviceId.serviceID)
+	tree.AddNode("/a/b/c/d", "4")
+	v, serviceId = tree.IsMatch("/a/b/c/d")
+	assert.Equal(t, true, v)
+	assert.Equal(t, "4", serviceId.serviceID)
+}
+
+func TestTreeNode(t *testing.T) {
+	tree := NewRootTree()
+	//tree.AddNode("/test/a/b/c", "1")
+	tree.AddNode("/.+", "2")
+	v, serviceId := tree.IsMatch("/a")
+	fmt.Println(v, serviceId)
 }
