@@ -14,25 +14,33 @@ type Tree struct {
 	route     *SafeMap
 	value     string
 	isRoot    bool
+	root      *Tree
 	serviceID string
 }
 
-func NewTree() *Tree {
-	return &Tree{
-		route: NewSafeMap(),
+func NewRootTree() *Tree {
+	t := &Tree{
+		father:    nil,
+		route:     NewSafeMap(),
+		isRoot:    true,
+		serviceID: "",
 	}
+	t.root = t
+	return t
 }
 
 func (t *Tree) newChild(node string) *Tree {
 	return &Tree{
 		father: t,
 		value:  node,
+		root:   t.root,
+		isRoot: false,
 		route:  NewSafeMap(),
 	}
 }
 
-func (t *Tree) root() *Tree {
-	return nodeTree
+func (t *Tree) getRoot() *Tree {
+	return t.root
 }
 
 func (t *Tree) AddNode(path, serviceID string) {
@@ -43,7 +51,7 @@ func (t *Tree) AddNode(path, serviceID string) {
 	if nodes[0] == "" {
 		nodes = nodes[1:]
 	}
-	n := t.root()
+	n := t.getRoot()
 	count := len(nodes)
 	for index, node := range nodes {
 		if _, ok := n.route.Get(node); !ok {
@@ -84,7 +92,7 @@ func (t *Tree) IsMatch(path string) (bool, *Tree) {
 	if nodes[0] == "" {
 		nodes = nodes[1:]
 	}
-	n := t.root()
+	n := t.getRoot()
 	count, index := len(nodes), 0
 	for index < count {
 		if v, ok := n.route.Get(nodes[index]); ok {
@@ -97,8 +105,8 @@ func (t *Tree) IsMatch(path string) (bool, *Tree) {
 	if index == count && n.serviceID != "" {
 		return true, n
 	}
-	for !n.father.isRoot {
-		if v, ok := n.father.route.Get(".+"); ok {
+	for n != nil {
+		if v, ok := n.route.Get(".+"); ok {
 			return true, v.(*Tree)
 		}
 		n = n.father
